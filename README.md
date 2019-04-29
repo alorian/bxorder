@@ -1,2 +1,1 @@
-# bxorder
-OpenSource Bitrix Order
+# OpenSource Bitrix Order
