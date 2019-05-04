@@ -5,17 +5,20 @@ use Bitrix\Main\Error;
 use Bitrix\Main\Loader;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Result;
+use Bitrix\Sale\Basket;
 use Bitrix\Sale\BasketItem;
 use Bitrix\Sale\Fuser;
 use Bitrix\Sale\Order;
 use Bitrix\Sale\Payment;
 use Bitrix\Sale\PropertyValue;
 use Bitrix\Sale\Shipment;
+use Bitrix\Sale\ShipmentCollection;
 use Bitrix\Sale\ShipmentItem;
 use Bitrix\Sale\ShipmentItemCollection;
 use Bitrix\Sale\Delivery;
 use OpenSource\Order\ErrorCollection;
 use OpenSource\Order\OrderHelper;
+use Bitrix\Sale\PaySystem;
 
 class OpenSourceOrderComponent extends CBitrixComponent
 {
@@ -29,12 +32,12 @@ class OpenSourceOrderComponent extends CBitrixComponent
      */
     public $errorCollection;
 
-    protected $availablePaySystems;
+    protected $personTypes = [];
 
     /**
      * CustomOrder constructor.
      * @param CBitrixComponent|null $component
-     * @throws \Bitrix\Main\LoaderException
+     * @throws Bitrix\Main\LoaderException
      */
     public function __construct(CBitrixComponent $component = null)
     {
@@ -57,7 +60,13 @@ class OpenSourceOrderComponent extends CBitrixComponent
         if (isset($arParams['DEFAULT_PERSON_TYPE_ID']) && (int)$arParams['DEFAULT_PERSON_TYPE_ID'] > 0) {
             $arParams['DEFAULT_PERSON_TYPE_ID'] = (int)$arParams['DEFAULT_PERSON_TYPE_ID'];
         } else {
-            $arParams['DEFAULT_PERSON_TYPE_ID'] = 1;
+            $arPersonTypes = $this->getPersonTypes();
+            $arPersonType = reset($arPersonTypes);
+            if (is_array($arPersonType)) {
+                $arParams['DEFAULT_PERSON_TYPE_ID'] = (int)reset($arPersonTypes)['ID'];
+            } else {
+                $arParams['DEFAULT_PERSON_TYPE_ID'] = 1;
+            }
         }
 
         if (isset($this->request['person_type_id']) && (int)$this->request['person_type_id'] > 0) {
@@ -77,23 +86,41 @@ class OpenSourceOrderComponent extends CBitrixComponent
         return $arParams;
     }
 
+    public function getPersonTypes(): array
+    {
+        if (empty($this->personTypes)) {
+            $personType = new CSalePersonType();
+            $rsPersonTypes = $personType->GetList(['SORT' => 'ASC']);
+            while ($arPersonType = $rsPersonTypes->Fetch()) {
+                $arPersonType['ID'] = (int)$arPersonType['ID'];
+                $this->personTypes[$arPersonType['ID']] = $arPersonType;
+            }
+        }
+
+        return $this->personTypes;
+    }
+
     /**
      * @param int $personTypeId
      * @return Order
-     * @throws \Exception
+     * @throws Exception
      */
     public function createVirtualOrder(int $personTypeId): Order
     {
         global $USER;
 
+        if (!isset($this->getPersonTypes()[$personTypeId])) {
+            throw new RuntimeException(Loc::getMessage('OPEN_SOURCE_ORDER_UNKNOWN_PERSON_TYPE'));
+        }
+
         $siteId = Context::getCurrent()
             ->getSite();
 
-        $basketItems = \Bitrix\Sale\Basket::loadItemsForFUser(Fuser::getId(), $siteId)
+        $basketItems = Basket::loadItemsForFUser(Fuser::getId(), $siteId)
             ->getOrderableItems();
 
         if (count($basketItems) === 0) {
-            throw new \LengthException(Loc::getMessage('OPEN_SOURCE_ORDER_EMPTY_BASKET'));
+            throw new LengthException(Loc::getMessage('OPEN_SOURCE_ORDER_EMPTY_BASKET'));
         }
 
         $this->order = Order::create($siteId, $USER->GetID());
@@ -105,17 +132,13 @@ class OpenSourceOrderComponent extends CBitrixComponent
 
     /**
      * @param array $propertyValues
-     * @throws \Exception
+     * @throws Exception
      */
     public function setOrderProperties(array $propertyValues): void
     {
-        if (empty($propertyValues)) {
-            return;
-        }
-
         foreach ($this->order->getPropertyCollection() as $prop) {
             /**
-             * @var \Bitrix\Sale\PropertyValue $prop
+             * @var PropertyValue $prop
              */
             if ($prop->isUtil()) {
                 continue;
@@ -136,11 +159,11 @@ class OpenSourceOrderComponent extends CBitrixComponent
     /**
      * @param int $deliveryId
      * @return Shipment
-     * @throws \Exception
+     * @throws Exception
      */
     public function createOrderShipment(int $deliveryId = 0): Shipment
     {
-        /* @var $shipmentCollection \Bitrix\Sale\ShipmentCollection */
+        /* @var $shipmentCollection ShipmentCollection */
         $shipmentCollection = $this->order->getShipmentCollection();
 
         if ($deliveryId > 0) {
@@ -170,7 +193,7 @@ class OpenSourceOrderComponent extends CBitrixComponent
     /**
      * @param int $paySystemId
      * @return Payment
-     * @throws \Exception
+     * @throws Exception
      */
     public function createOrderPayment(int $paySystemId): Payment
     {
@@ -187,87 +210,28 @@ class OpenSourceOrderComponent extends CBitrixComponent
     /**
      * @return Result
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function validateProperties(): Result
     {
         $result = new Result();
 
-        /**
-         * PROPERTIES VALIDATION
-         */
         foreach ($this->order->getPropertyCollection() as $prop) {
             /**
              * @var PropertyValue $prop
              */
-            if ($prop->isRequired() && empty($prop->getValue())) {
-                $result->addError(new Error(
-                    Loc::getMessage('OPEN_SOURCE_ORDER_PROPERTY_REQUIRED', [
-                        '#PROPERTY_NAME#' => $prop->getName()
-                    ]),
-                    'property_' . $prop->getField('CODE'),
-                    [
-                        'id' => $prop->getId(),
-                        'code' => $prop->getField('CODE'),
-                        'type' => 'required'
-                    ]
-                ));
+            if ($prop->isUtil()) {
+                continue;
             }
 
-            if (!empty($prop->getValue())) {
-                switch ($prop->getType()) {
-                    case 'ENUM':
-                        $selectedOptions = $prop->getValue();
-                        if (!is_array($selectedOptions)) {
-                            $selectedOptions = [$selectedOptions];
-                        }
-                        $property = $prop->getPropertyObject();
-                        if ($property !== null) {
-                            $availableOptions = $property->getOptions();
-                            foreach ($selectedOptions as $option) {
-                                if (!isset($availableOptions[$option])) {
-                                    $result->addError(new Error(
-                                        Loc::getMessage('OPEN_SOURCE_ORDER_PROPERTY_ENUM_INVALID_OPTION', [
-                                            '#PROPERTY_NAME#' => $prop->getName()
-                                        ]),
-                                        'property_' . $prop->getField('CODE'),
-                                        [
-                                            'id' => $prop->getId(),
-                                            'code' => $prop->getField('CODE'),
-                                            'type' => 'enum_invalid_option'
-                                        ]
-                                    ));
-                                }
-                            }
-                        }
-                        break;
-
-                    case 'DATE':
-                        $dateTime = \DateTime::createFromFormat(
-                            \Bitrix\Main\Type\DateTime::getFormat(),
-                            $prop->getValue()
-                        );
-                        if ($dateTime === false) {
-                            $date = \DateTime::createFromFormat(
-                                \Bitrix\Main\Type\Date::getFormat(),
-                                $prop->getValue()
-                            );
-                            if ($date === false) {
-                                $result->addError(new Error(
-                                    Loc::getMessage('OPEN_SOURCE_ORDER_PROPERTY_DATE_WRONG_FORMAT', [
-                                        '#PROPERTY_NAME#' => $prop->getName()
-                                    ]),
-                                    'property_' . $prop->getField('CODE'),
-                                    [
-                                        'id' => $prop->getId(),
-                                        'code' => $prop->getField('CODE'),
-                                        'type' => 'date_wrong_format'
-                                    ]
-                                ));
-                            }
-                        }
-                        break;
+            $r = $prop->checkRequiredValue($prop->getField('CODE'), $prop->getValue());
+            if ($r->isSuccess()) {
+                $r = $prop->checkValue($prop->getField('CODE'), $prop->getValue());
+                if (!$r->isSuccess()) {
+                    $result->addErrors($r->getErrors());
                 }
+            } else {
+                $result->addErrors($r->getErrors());
             }
         }
 
@@ -276,15 +240,12 @@ class OpenSourceOrderComponent extends CBitrixComponent
 
     /**
      * @return Result
-     * @throws \Exception
+     * @throws Exception
      */
     public function validateDelivery(): Result
     {
         $result = new Result();
 
-        /**
-         * DELIVERY VALIDATION
-         */
         $shipment = OrderHelper::getFirstNonSystemShipment($this->order);
 
         if ($shipment !== null) {
@@ -293,7 +254,12 @@ class OpenSourceOrderComponent extends CBitrixComponent
                 $availableDeliveries = Delivery\Services\Manager::getRestrictedObjectsList($shipment);
                 if (!isset($availableDeliveries[$obDelivery->getId()])) {
                     $result->addError(new Error(
-                        Loc::getMessage('OPEN_SOURCE_ORDER_DELIVERY_UNAVAILABLE'),
+                        Loc::getMessage(
+                            'OPEN_SOURCE_ORDER_DELIVERY_UNAVAILABLE',
+                            [
+                                '#DELIVERY_NAME#' => $obDelivery->getNameWithParent()
+                            ]
+                        ),
                         'delivery',
                         [
                             'type' => 'unavailable'
@@ -324,16 +290,44 @@ class OpenSourceOrderComponent extends CBitrixComponent
 
     /**
      * @return Result
-     * @throws \Exception
+     * @throws Exception
      */
     public function validatePayment(): Result
     {
         $result = new Result();
 
-        /**
-         * PAYMENT VALIDATION
-         */
-        if (count($this->order->getPaymentCollection()) < 1) {
+        if (!$this->order->getPaymentCollection()->isEmpty()) {
+            $payment = $this->order->getPaymentCollection()->current();
+            /**
+             * @var Payment $payment
+             */
+            $obPaySystem = $payment->getPaySystem();
+            if ($obPaySystem instanceof PaySystem\Service) {
+                $availablePaySystems = PaySystem\Manager::getListWithRestrictions($payment);
+                if (!isset($availablePaySystems[$payment->getId()])) {
+                    $result->addError(new Error(
+                        Loc::getMessage(
+                            'OPEN_SOURCE_ORDER_PAYMENT_UNAVAILABLE',
+                            [
+                                '#PAYMENT_NAME#' => $payment->getPaymentSystemName()
+                            ]
+                        ),
+                        'payment',
+                        [
+                            'type' => 'unavailable'
+                        ]
+                    ));
+                }
+            } else {
+                $result->addError(new Error(
+                    Loc::getMessage('OPEN_SOURCE_ORDER_NO_PAY_SYSTEM_SELECTED'),
+                    'payment',
+                    [
+                        'type' => 'undefined'
+                    ]
+                ));
+            }
+        } else {
             $result->addError(new Error(
                 Loc::getMessage('OPEN_SOURCE_ORDER_NO_PAY_SYSTEM_SELECTED'),
                 'payment',
@@ -348,7 +342,7 @@ class OpenSourceOrderComponent extends CBitrixComponent
 
     /**
      * @return Result
-     * @throws \Exception
+     * @throws Exception
      */
     public function validateOrder(): Result
     {
@@ -378,7 +372,9 @@ class OpenSourceOrderComponent extends CBitrixComponent
             $this->createVirtualOrder($this->arParams['PERSON_TYPE_ID']);
 
             $propertiesList = $this->request['properties'] ?? $this->arParams['DEFAULT_PROPERTIES'] ?? [];
-            $this->setOrderProperties($propertiesList);
+            if (!empty($propertiesList)) {
+                $this->setOrderProperties($propertiesList);
+            }
 
             $deliveryId = $this->request['delivery_id'] ?? $this->arParams['DEFAULT_DELIVERY_ID'] ?? 0;
             $this->createOrderShipment($deliveryId);
@@ -392,12 +388,15 @@ class OpenSourceOrderComponent extends CBitrixComponent
                 $validationResult = $this->validateOrder();
 
                 if ($validationResult->isSuccess()) {
-                    $this->order->save();
+                    $saveResult = $this->order->save();
+                    if (!$saveResult->isSuccess()) {
+                        $this->errorCollection->add($saveResult->getErrors());
+                    }
                 } else {
                     $this->errorCollection->add($validationResult->getErrors());
                 }
             }
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $this->errorCollection->setError(new Error($exception->getMessage()));
         }
 

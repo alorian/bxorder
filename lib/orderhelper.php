@@ -56,9 +56,10 @@ class OrderHelper
      */
     public static function calcDeliveries(Shipment $shipment, array $deliveryObjects): array
     {
+        $calculatedDeliveries = [];
+
         $deliveryId = $shipment->getDeliveryId();
 
-        $calculatedDeliveries = [];
         foreach ($deliveryObjects as $obDelivery) {
             $shipment->setField('DELIVERY_ID', $obDelivery->getId());
             $calculatedDeliveries[$obDelivery->getId()] = $obDelivery->calculate($shipment);

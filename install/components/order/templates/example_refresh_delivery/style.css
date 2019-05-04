@@ -1,0 +1,29 @@
+.os-order {
+}
+
+.os-order .error {
+    color: #a40000;
+}
+
+.os-order .basket-properties {
+    color: #919191;
+}
+
+.os-order table {
+    border-collapse: collapse;
+}
+
+.os-order table th {
+    background: #DFDFDF;
+    padding: 5px;
+    border: 1px solid #c9c9c9;
+}
+
+.os-order table td {
+    padding: 5px;
+    border: 1px solid #DFDFDF;
+}
+
+.os-order .location {
+    min-width: 400px;
+}

@@ -1,0 +1,33 @@
+.selectize-control.location-search .selectize-dropdown > div {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.selectize-control.location-search .selectize-dropdown .name {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.selectize-control.location-search .selectize-dropdown .title {
+    padding: 10px;
+}
+
+.selectize-control.location-search::before {
+    -moz-transition: opacity 0.2s;
+    -webkit-transition: opacity 0.2s;
+    transition: opacity 0.2s;
+    content: ' ';
+    z-index: 2;
+    position: absolute;
+    display: block;
+    top: 12px;
+    right: 34px;
+    width: 16px;
+    height: 16px;
+    background: url(images/spinner.gif);
+    background-size: 16px 16px;
+    opacity: 0;
+}
+
+.selectize-control.location-search.loading::before {
+    opacity: 0.4;
+}
