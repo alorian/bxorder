@@ -39,8 +39,7 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
                             ?>
                             <div class="location">
                                 <select class="location-search" name="<?= $arProp['FORM_NAME'] ?>"
-                                        id="<?= $arProp['FORM_LABEL'] ?>"
-                                        placeholder="Выберите местоположение...">
+                                        id="<?= $arProp['FORM_LABEL'] ?>">
                                     <option
                                             data-data='<?echo \Bitrix\Main\Web\Json::encode($arProp['LOCATION_DATA'])?>'
                                             value="<?= $arProp['VALUE'] ?>"><?=$arProp['LOCATION_DATA']['label']?></option>
