@@ -2,6 +2,8 @@
 
 namespace OpenSource\Order;
 
+use Bitrix\Sale\Location\LocationTable;
+
 class LocationHelper
 {
     /**
@@ -9,13 +11,16 @@ class LocationHelper
      * @param array $excludeParts
      * @param string $order sort
      * @return array
+     * @throws \Bitrix\Main\ArgumentException
+     * @throws \Bitrix\Main\ObjectPropertyException
+     * @throws \Bitrix\Main\SystemException
      */
     public static function getDisplayByCode(string $locationCode, array $excludeParts = [], string $order = 'desc'): array
     {
         $result = [];
 
         if ($locationCode !== '') {
-            $res = \Bitrix\Sale\Location\LocationTable::getList([
+            $res = LocationTable::getList([
                 'filter' => [
                     '=CODE' => $locationCode,
                     '!PARENTS.TYPE.CODE' => $excludeParts,
