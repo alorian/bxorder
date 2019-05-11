@@ -5,8 +5,10 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
 
 use Bitrix\Main\Engine\Controller;
 use Bitrix\Main\Loader;
+use Bitrix\Main\LoaderException;
 use Bitrix\Main\Request;
 use Bitrix\Sale\Location\Search\Finder;
+use Bitrix\Sale\Location\TypeTable;
 use OpenSource\Order\LocationHelper;
 use Bitrix\Sale\Delivery;
 use OpenSource\Order\OrderHelper;
@@ -14,9 +16,8 @@ use OpenSource\Order\OrderHelper;
 class OpenSourceOrderAjaxController extends Controller
 {
     /**
-     * OpenSourceOrderAjaxController constructor.
      * @param Request|null $request
-     * @throws \Bitrix\Main\LoaderException
+     * @throws LoaderException
      */
     public function __construct(Request $request = null)
     {
@@ -37,6 +38,9 @@ class OpenSourceOrderAjaxController extends Controller
             ],
             'calculateDeliveries' => [
                 'prefilters' => []
+            ],
+            'saveOrder' => [
+                'prefilters' => []
             ]
         ];
     }
@@ -44,15 +48,18 @@ class OpenSourceOrderAjaxController extends Controller
     /**
      * @param string $q
      * @param int $limit
+     * @param string $typeCode
      * @param array $excludeParts
-     * @param string $order
+     * @param string $sortOrder
      * @return array
+     * @throws Exception
      */
     public function searchLocationAction(
-        string $q = '',
+        string $q,
         int $limit = 5,
+        string $typeCode = '',
         array $excludeParts = [],
-        string $order = 'desc'
+        string $sortOrder = 'desc'
     ): array {
         $foundLocations = [];
 
@@ -61,19 +68,39 @@ class OpenSourceOrderAjaxController extends Controller
                 $limit = 50;
             }
 
+            //getting location type
+            $typeId = null;
+            if(!empty($typeCode)) {
+                $arType = TypeTable::getList([
+                    'select' => [
+                        'ID',
+                        'CODE'
+                    ],
+                    'filter' => [
+                        '=CODE' => $typeCode
+                    ]
+                ])
+                    ->fetch();
+
+                if (!empty($arType)) {
+                    $typeId = $arType['ID'];
+                }
+            }
+
             $result = Finder::find([
                 'select' => [
                     'ID',
-                    'CODE'
+                    'CODE',
                 ],
                 'filter' => [
-                    'PHRASE' => $q
+                    'PHRASE' => $q,
+                    'TYPE_ID' => $typeId
                 ],
                 'limit' => $limit
             ]);
 
             while ($arLocation = $result->fetch()) {
-                $foundLocations[] = LocationHelper::getDisplayByCode($arLocation['CODE'], $excludeParts, $order);
+                $foundLocations[] = LocationHelper::getDisplayByCode($arLocation['CODE'], $excludeParts, $sortOrder);
             }
         }
 
@@ -89,8 +116,8 @@ class OpenSourceOrderAjaxController extends Controller
      * @throws Exception
      */
     public function calculateDeliveriesAction(
-        int $person_type_id = 1,
-        array $properties = [],
+        int $person_type_id,
+        array $properties,
         array $delivery_ids = []
     ): array {
         CBitrixComponent::includeComponentClass('opensource:order');
@@ -110,26 +137,52 @@ class OpenSourceOrderAjaxController extends Controller
             );
         }
 
-        $data = [];
+        $calculatedDeliveries = [];
         foreach (OrderHelper::calcDeliveries($shipment, $availableDeliveries) as $deliveryId => $calculationResult) {
             $obDelivery = $availableDeliveries[$deliveryId];
 
             $arDelivery = [
                 'id' => $obDelivery->getId(),
+                'success' => $calculationResult->isSuccess(),
                 'name' => $obDelivery->getName(),
                 'logo_path' => $obDelivery->getLogotipPath(),
                 'period' => $calculationResult->getPeriodDescription(),
-                'price' => $calculationResult->getPrice(),
-                'price_display' => SaleFormatCurrency(
+                'base_price' => $calculationResult->getPrice(),
+                'base_price_display' => SaleFormatCurrency(
                     $calculationResult->getPrice(),
                     $componentClass->order->getCurrency()
                 ),
             ];
 
-            $data[$arDelivery['id']] = $arDelivery;
+            $data = $calculationResult->getData();
+            if (!empty($data['DISCOUNT_DATA'])) {
+                $arDelivery['price'] = $data['DISCOUNT_DATA']['PRICE'];
+                $arDelivery['price_display'] = SaleFormatCurrency(
+                    $arDelivery['price'],
+                    $componentClass->order->getCurrency()
+                );
+                $arDelivery['discount'] = $data['DISCOUNT_DATA']['DISCOUNT'];
+                $arDelivery['discount_display'] = SaleFormatCurrency(
+                    $arDelivery['discount'],
+                    $componentClass->order->getCurrency()
+                );
+            } else {
+                $arDelivery['price'] = $arDelivery['base_price'];
+                $arDelivery['price_display'] = $arDelivery['base_price_display'];
+                $arDelivery['discount'] = 0;
+            }
+
+            $arDelivery['errors'] = [];
+            if (!$calculationResult->isSuccess()) {
+                foreach ($calculationResult->getErrorMessages() as $message) {
+                    $arDelivery['errors'][] = $message;
+                }
+            }
+
+            $calculatedDeliveries[$arDelivery['id']] = $arDelivery;
         }
 
-        return $data;
+        return $calculatedDeliveries;
     }
 
     /**
@@ -156,7 +209,8 @@ class OpenSourceOrderAjaxController extends Controller
         if ($validationResult->isSuccess()) {
             $saveResult = $componentClass->order->save();
             if ($saveResult->isSuccess()) {
-                $data['result'] = true;
+                $data['saved'] = true;
+                $data['order_id'] = $saveResult->getId();
             } else {
                 $this->errorCollection->add($saveResult->getErrors());
             }
