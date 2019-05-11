@@ -28,6 +28,10 @@
     min-width: 400px;
 }
 
+.enum-option {
+    display:block;
+}
+
 .properties-table {
     display: none;
 }

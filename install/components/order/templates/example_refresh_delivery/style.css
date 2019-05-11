@@ -27,3 +27,7 @@
 .os-order .location {
     min-width: 400px;
 }
+
+.enum-option {
+    display:block;
+}

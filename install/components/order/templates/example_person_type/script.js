@@ -37,7 +37,20 @@ $(document).ready(function () {
         }
     });
 
-    $('.person-type-selector input').change(function (event) {
+    /**
+     * Disabling all non active properties
+     */
+    $('.properties-table').each(function (index, element) {
+        var propTable = $(element);
+        if (!propTable.hasClass('active')) {
+            propTable.find(':input').prop('disabled', true);
+        }
+    });
+
+    /**
+     * Show property table and enable it properties on person type change
+     */
+    $('.person-type-selector input').change(function () {
         var currentPropTable = $('.properties-table.active');
         currentPropTable.find(':input').prop('disabled', true);
         currentPropTable.removeClass('active');

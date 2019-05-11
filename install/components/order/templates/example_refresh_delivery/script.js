@@ -40,7 +40,7 @@ $(document).ready(function () {
     });
 
     /**
-     * ПЕРЕСЧЕТ СТОИМОСТИ ДОСТАВОК ПОСЛЕ СМЕНЫ МЕСТОПОЛОЖЕНИЯ
+     * Recalculate all deliveries on location prop change
      */
     var $deliveryBlock = $('#os-order-delivery-block');
 

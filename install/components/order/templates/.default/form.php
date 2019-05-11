@@ -51,12 +51,11 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
 
                         case 'ENUM':
                             foreach ($arProp['OPTIONS'] as $code => $name):?>
-                                <input type="radio" name="<?= $arProp['FORM_NAME'] ?>"
-                                       id="<?= $arProp['FORM_LABEL'] ?>" value="<?= $code ?>">
-                                <?= $name ?>
-                                <br>
-                            <?php
-                            endforeach;
+                                <label class="enum-option">
+                                    <input type="radio" name="<?= $arProp['FORM_NAME'] ?>" value="<?= $code ?>">
+                                    <?= $name ?>
+                                </label>
+                            <?endforeach;
                             break;
 
                         case 'DATE':

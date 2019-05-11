@@ -6,8 +6,10 @@
  */
 
 use Bitrix\Sale\BasketItem;
+use Bitrix\Sale\BasketPropertyItem;
 use Bitrix\Sale\Delivery;
 use Bitrix\Sale\Order;
+use Bitrix\Sale\PropertyValue;
 use OpenSource\Order\LocationHelper;
 use OpenSource\Order\OrderHelper;
 
@@ -29,7 +31,7 @@ $arResult = $order->getFieldValues();
 $arResult['PROPERTIES'] = [];
 foreach ($order->getPropertyCollection() as $prop) {
     /**
-     * @var \Bitrix\Sale\PropertyValue $prop
+     * @var PropertyValue $prop
      */
     if ($prop->isUtil()) {
         continue;
@@ -86,7 +88,7 @@ if ($shipment !== null) {
         $arDelivery['NAME'] = $obDelivery->getName();
         $arDelivery['CHECKED'] = $checkedDeliveryId === $obDelivery->getId();
         $arDelivery['PRICE'] = $calculationResult->getPrice();
-        $arDelivery['PRICE_DISPLAY'] = \SaleFormatCurrency(
+        $arDelivery['PRICE_DISPLAY'] = SaleFormatCurrency(
             $calculationResult->getDeliveryPrice(),
             $order->getCurrency()
         );
@@ -137,7 +139,7 @@ foreach ($order->getBasket() as $basketItem) {
     $arBasketItem['PROPERTIES'] = [];
     foreach ($basketItem->getPropertyCollection() as $basketPropertyItem):
         /**
-         * @var \Bitrix\Sale\BasketPropertyItem $basketPropertyItem
+         * @var BasketPropertyItem $basketPropertyItem
          */
         $propCode = $basketPropertyItem->getField('CODE');
         if ($propCode !== 'CATALOG.XML_ID' && $propCode !== 'PRODUCT.XML_ID') {
@@ -153,19 +155,19 @@ foreach ($order->getBasket() as $basketItem) {
     $arBasketItem['QUANTITY_DISPLAY'] .= ' ' . $basketItem->getField('MEASURE_NAME');
 
     $arBasketItem['BASE_PRICE'] = $basketItem->getBasePrice();
-    $arBasketItem['BASE_PRICE_DISPLAY'] = \SaleFormatCurrency(
+    $arBasketItem['BASE_PRICE_DISPLAY'] = SaleFormatCurrency(
         $arBasketItem['BASE_PRICE'],
         $arBasketItem['CURRENCY']
     );
 
     $arBasketItem['PRICE'] = $basketItem->getPrice();
-    $arBasketItem['PRICE_DISPLAY'] = \SaleFormatCurrency(
+    $arBasketItem['PRICE_DISPLAY'] = SaleFormatCurrency(
         $arBasketItem['PRICE'],
         $arBasketItem['CURRENCY']
     );
 
     $arBasketItem['SUM'] = $basketItem->getPrice() * $basketItem->getQuantity();
-    $arBasketItem['SUM_DISPLAY'] = \SaleFormatCurrency(
+    $arBasketItem['SUM_DISPLAY'] = SaleFormatCurrency(
         $arBasketItem['SUM'],
         $arBasketItem['CURRENCY']
     );
@@ -178,21 +180,21 @@ foreach ($order->getBasket() as $basketItem) {
  */
 //Стоимость товаров без скидок
 $arResult['PRODUCTS_BASE_PRICE'] = $order->getBasket()->getBasePrice();
-$arResult['PRODUCTS_BASE_PRICE_DISPLAY'] = \SaleFormatCurrency(
+$arResult['PRODUCTS_BASE_PRICE_DISPLAY'] = SaleFormatCurrency(
     $arResult['PRODUCTS_BASE_PRICE'],
     $arResult['CURRENCY']
 );
 
 //Стоимость товаров со скидами
 $arResult['PRODUCTS_PRICE'] = $order->getBasket()->getPrice();
-$arResult['PRODUCTS_PRICE_DISPLAY'] = \SaleFormatCurrency(
+$arResult['PRODUCTS_PRICE_DISPLAY'] = SaleFormatCurrency(
     $arResult['PRODUCTS_PRICE'],
     $arResult['CURRENCY']
 );
 
 //Скидка на товары
 $arResult['PRODUCTS_DISCOUNT'] = $arResult['PRODUCTS_BASE_PRICE'] - $arResult['PRODUCTS_PRICE'];
-$arResult['PRODUCTS_DISCOUNT_DISPLAY'] = \SaleFormatCurrency(
+$arResult['PRODUCTS_DISCOUNT_DISPLAY'] = SaleFormatCurrency(
     $arResult['PRODUCTS_DISCOUNT'],
     $arResult['CURRENCY']
 );
@@ -205,21 +207,21 @@ $arShowPrices = $order->getDiscount()
 
 //Стоимость доставки без скидок
 $arResult['DELIVERY_BASE_PRICE'] = $arShowPrices['DELIVERY']['BASE_PRICE'] ?? 0;
-$arResult['DELIVERY_BASE_PRICE_DISPLAY'] = \SaleFormatCurrency(
+$arResult['DELIVERY_BASE_PRICE_DISPLAY'] = SaleFormatCurrency(
     $arResult['DELIVERY_BASE_PRICE'],
     $arResult['CURRENCY']
 );
 
 //Стоимость доставки с учетом скидок
 $arResult['DELIVERY_PRICE'] = $order->getDeliveryPrice();
-$arResult['DELIVERY_PRICE_DISPLAY'] = \SaleFormatCurrency(
+$arResult['DELIVERY_PRICE_DISPLAY'] = SaleFormatCurrency(
     $arResult['DELIVERY_PRICE'],
     $arResult['CURRENCY']
 );
 
 //Скидка на доставку
 $arResult['DELIVERY_DISCOUNT'] = $arShowPrices['DELIVERY']['DISCOUNT'] ?? 0;
-$arResult['DELIVERY_DISCOUNT_DISPLAY'] = \SaleFormatCurrency(
+$arResult['DELIVERY_DISCOUNT_DISPLAY'] = SaleFormatCurrency(
     $arResult['DELIVERY_PRICE'],
     $arResult['CURRENCY']
 );
@@ -229,21 +231,21 @@ $arResult['DELIVERY_DISCOUNT_DISPLAY'] = \SaleFormatCurrency(
  */
 //Общая цена без скидок
 $arResult['SUM_BASE'] = $arResult['PRODUCTS_BASE_PRICE'] + $arResult['DELIVERY_BASE_PRICE'];
-$arResult['SUM_BASE_DISPLAY'] = \SaleFormatCurrency(
+$arResult['SUM_BASE_DISPLAY'] = SaleFormatCurrency(
     $arResult['SUM_BASE'],
     $arResult['CURRENCY']
 );
 
 //Общая скидка
 $arResult['DISCOUNT_VALUE'] = $arResult['SUM_BASE'] - $order->getPrice();
-$arResult['DISCOUNT_VALUE_DISPLAY'] = \SaleFormatCurrency(
+$arResult['DISCOUNT_VALUE_DISPLAY'] = SaleFormatCurrency(
     $arResult['DISCOUNT_VALUE'],
     $arResult['CURRENCY']
 );
 
 //К оплате
 $arResult['SUM'] = $order->getPrice();
-$arResult['SUM_DISPLAY'] = \SaleFormatCurrency(
+$arResult['SUM_DISPLAY'] = SaleFormatCurrency(
     $arResult['SUM'],
     $arResult['CURRENCY']
 );

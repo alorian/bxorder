@@ -54,8 +54,9 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
                                     <select class="location-search" name="<?= $arProp['FORM_NAME'] ?>"
                                             id="<?= $arProp['FORM_LABEL'] ?>">
                                         <option
-                                                data-data='<?echo Json::encode($arProp['LOCATION_DATA'])?>'
-                                                value="<?= $arProp['VALUE'] ?>"><?=$arProp['LOCATION_DATA']['label']?></option>
+                                                data-data='<?
+                                                echo Json::encode($arProp['LOCATION_DATA']) ?>'
+                                                value="<?= $arProp['VALUE'] ?>"><?= $arProp['LOCATION_DATA']['label'] ?></option>
                                     </select>
                                 </div>
                                 <?
@@ -63,12 +64,11 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
 
                             case 'ENUM':
                                 foreach ($arProp['OPTIONS'] as $code => $name):?>
-                                    <input type="radio" name="<?= $arProp['FORM_NAME'] ?>"
-                                           id="<?= $arProp['FORM_LABEL'] ?>" value="<?= $code ?>">
-                                    <?= $name ?>
-                                    <br>
-                                <?php
-                                endforeach;
+                                    <label class="enum-option">
+                                        <input type="radio" name="<?= $arProp['FORM_NAME'] ?>" value="<?= $code ?>">
+                                        <?= $name ?>
+                                    </label>
+                                <?endforeach;
                                 break;
 
                             case 'DATE':
