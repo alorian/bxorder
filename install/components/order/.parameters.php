@@ -15,14 +15,23 @@ while ($arPersonType = $rsPersonTypes->Fetch()) {
     $arPersonTypesList[$arPersonType['ID']] = '[' . $arPersonType['ID'] . '] ' . $arPersonType['NAME'];
 }
 
-$arDeliveries = [
+
+$arDeliveriesList = [
     0 => Loc::getMessage('OPEN_SOURCE_DEFAULT_VALUE_EMPTY')
 ];
+$arActiveDeliveries = Bitrix\Sale\Delivery\Services\Manager::getActiveList();
+foreach ($arActiveDeliveries as $arDelivery) {
+    $arDeliveriesList[$arDelivery['ID']] = '[' . $arDelivery['ID'] . '] ' . $arDelivery['NAME'];
+}
 
-$arPaySystems = [
+
+$arPaySystemsList = [
     0 => Loc::getMessage('OPEN_SOURCE_DEFAULT_VALUE_EMPTY')
 ];
-
+$rsPaySystems = Bitrix\Sale\PaySystem\Manager::getList();
+while ($arPaySystem = $rsPaySystems->fetch()) {
+    $arPaySystemsList[$arPaySystem['ID']] = '[' . $arPaySystem['ID'] . '] ' . $arPaySystem['NAME'];
+}
 
 $arComponentParameters = [
     'GROUPS' => [
@@ -42,7 +51,7 @@ $arComponentParameters = [
             'MULTIPLE' => 'N',
             'DEFAULT' => '/personal/cart/',
             'PARENT' => 'BASE',
-            'VALUES' => $arDeliveries
+            'VALUES' => $arDeliveriesList
         ],
         'DEFAULT_PAY_SYSTEM_ID' => [
             'NAME' => Loc::getMessage('OPEN_SOURCE_ORDER_DEFAULT_PAY_SYSTEM_ID'),
@@ -50,21 +59,7 @@ $arComponentParameters = [
             'MULTIPLE' => 'N',
             'DEFAULT' => '/personal/cart/',
             'PARENT' => 'BASE',
-            'VALUES' => $arPaySystems
-        ],
-        'USE_DEFAULT_USER_ID' => [
-            'NAME' => Loc::getMessage('OPEN_SOURCE_ORDER_USE_DEFAULT_USER_ID'),
-            'TYPE' => 'CHECKBOX',
-            'MULTIPLE' => 'N',
-            'DEFAULT' => 'N',
-            'PARENT' => 'ADDITIONAL_SETTINGS',
-        ],
-        'DEFAULT_USER_ID' => [
-            'NAME' => Loc::getMessage('OPEN_SOURCE_ORDER_DEFAULT_USER_ID'),
-            'TYPE' => 'STRING',
-            'MULTIPLE' => 'N',
-            'DEFAULT' => '',
-            'PARENT' => 'ADDITIONAL_SETTINGS',
+            'VALUES' => $arPaySystemsList
         ],
         'PATH_TO_BASKET' => [
             'NAME' => Loc::getMessage('OPEN_SOURCE_ORDER_PATH_TO_BASKET'),

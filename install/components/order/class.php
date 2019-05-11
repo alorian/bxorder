@@ -83,18 +83,6 @@ class OpenSourceOrderComponent extends CBitrixComponent
             $arParams['SAVE'] = false;
         }
 
-        if (isset($arParams['USE_DEFAULT_USER_ID'])) {
-            $arParams['USE_DEFAULT_USER_ID'] = $arParams['USE_DEFAULT_USER_ID'] === 'Y';
-        } else {
-            $arParams['USE_DEFAULT_USER_ID'] = false;
-        }
-
-        if ($arParams['USE_DEFAULT_USER_ID'] && isset($arParams['DEFAULT_USER_ID']) && (int)$arParams['DEFAULT_USER_ID'] > 0) {
-            $arParams['DEFAULT_USER_ID'] = (int)$arParams['DEFAULT_USER_ID'];
-        } else {
-            $arParams['USE_DEFAULT_USER_ID'] = false;
-        }
-
         return $arParams;
     }
 
@@ -138,12 +126,7 @@ class OpenSourceOrderComponent extends CBitrixComponent
             throw new LengthException(Loc::getMessage('OPEN_SOURCE_ORDER_EMPTY_BASKET'));
         }
 
-        $userId = $USER->GetID();
-        if (!$userId && $this->arParams['USE_DEFAULT_USER_ID']) {
-            $userId = $this->arParams['DEFAULT_USER_ID'];
-        }
-
-        $this->order = Order::create($siteId, $userId);
+        $this->order = Order::create($siteId, $USER->GetID());
         $this->order->setPersonTypeId($personTypeId);
         $this->order->setBasket($basketItems);
 
