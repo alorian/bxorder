@@ -33,7 +33,6 @@ $arComponentParameters = [
             'TYPE' => 'LIST',
             'MULTIPLE' => 'N',
             'DEFAULT' => '/personal/cart/',
-            'COLS' => 10,
             'PARENT' => 'BASE',
             'VALUES' => $arPersonTypesList
         ],
@@ -42,7 +41,6 @@ $arComponentParameters = [
             'TYPE' => 'LIST',
             'MULTIPLE' => 'N',
             'DEFAULT' => '/personal/cart/',
-            'COLS' => 20,
             'PARENT' => 'BASE',
             'VALUES' => $arDeliveries
         ],
@@ -51,16 +49,28 @@ $arComponentParameters = [
             'TYPE' => 'LIST',
             'MULTIPLE' => 'N',
             'DEFAULT' => '/personal/cart/',
-            'COLS' => 30,
             'PARENT' => 'BASE',
             'VALUES' => $arPaySystems
+        ],
+        'USE_DEFAULT_USER_ID' => [
+            'NAME' => Loc::getMessage('OPEN_SOURCE_ORDER_USE_DEFAULT_USER_ID'),
+            'TYPE' => 'CHECKBOX',
+            'MULTIPLE' => 'N',
+            'DEFAULT' => 'N',
+            'PARENT' => 'ADDITIONAL_SETTINGS',
+        ],
+        'DEFAULT_USER_ID' => [
+            'NAME' => Loc::getMessage('OPEN_SOURCE_ORDER_DEFAULT_USER_ID'),
+            'TYPE' => 'STRING',
+            'MULTIPLE' => 'N',
+            'DEFAULT' => '',
+            'PARENT' => 'ADDITIONAL_SETTINGS',
         ],
         'PATH_TO_BASKET' => [
             'NAME' => Loc::getMessage('OPEN_SOURCE_ORDER_PATH_TO_BASKET'),
             'TYPE' => 'STRING',
             'MULTIPLE' => 'N',
             'DEFAULT' => '/personal/cart/',
-            'COLS' => 40,
             'PARENT' => 'ADDITIONAL_SETTINGS',
         ]
     ]

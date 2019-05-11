@@ -50,7 +50,7 @@ class OpenSourceOrderComponent extends CBitrixComponent
         $this->errorCollection = new ErrorCollection();
     }
 
-    public function onIncludeComponentLang(): void
+    public function onIncludeComponentLang()
     {
         Loc::loadLanguageFile(__FILE__);
     }
@@ -83,9 +83,24 @@ class OpenSourceOrderComponent extends CBitrixComponent
             $arParams['SAVE'] = false;
         }
 
+        if (isset($arParams['USE_DEFAULT_USER_ID'])) {
+            $arParams['USE_DEFAULT_USER_ID'] = $arParams['USE_DEFAULT_USER_ID'] === 'Y';
+        } else {
+            $arParams['USE_DEFAULT_USER_ID'] = false;
+        }
+
+        if ($arParams['USE_DEFAULT_USER_ID'] && isset($arParams['DEFAULT_USER_ID']) && (int)$arParams['DEFAULT_USER_ID'] > 0) {
+            $arParams['DEFAULT_USER_ID'] = (int)$arParams['DEFAULT_USER_ID'];
+        } else {
+            $arParams['USE_DEFAULT_USER_ID'] = false;
+        }
+
         return $arParams;
     }
 
+    /**
+     * @return array
+     */
     public function getPersonTypes(): array
     {
         if (empty($this->personTypes)) {
@@ -105,7 +120,7 @@ class OpenSourceOrderComponent extends CBitrixComponent
      * @return Order
      * @throws Exception
      */
-    public function createVirtualOrder(int $personTypeId): Order
+    public function createVirtualOrder(int $personTypeId)
     {
         global $USER;
 
@@ -123,7 +138,12 @@ class OpenSourceOrderComponent extends CBitrixComponent
             throw new LengthException(Loc::getMessage('OPEN_SOURCE_ORDER_EMPTY_BASKET'));
         }
 
-        $this->order = Order::create($siteId, $USER->GetID());
+        $userId = $USER->GetID();
+        if (!$userId && $this->arParams['USE_DEFAULT_USER_ID']) {
+            $userId = $this->arParams['DEFAULT_USER_ID'];
+        }
+
+        $this->order = Order::create($siteId, $userId);
         $this->order->setPersonTypeId($personTypeId);
         $this->order->setBasket($basketItems);
 
@@ -134,7 +154,7 @@ class OpenSourceOrderComponent extends CBitrixComponent
      * @param array $propertyValues
      * @throws Exception
      */
-    public function setOrderProperties(array $propertyValues): void
+    public function setOrderProperties(array $propertyValues)
     {
         foreach ($this->order->getPropertyCollection() as $prop) {
             /**
@@ -161,7 +181,7 @@ class OpenSourceOrderComponent extends CBitrixComponent
      * @return Shipment
      * @throws Exception
      */
-    public function createOrderShipment(int $deliveryId = 0): Shipment
+    public function createOrderShipment(int $deliveryId = 0)
     {
         /* @var $shipmentCollection ShipmentCollection */
         $shipmentCollection = $this->order->getShipmentCollection();
@@ -195,7 +215,7 @@ class OpenSourceOrderComponent extends CBitrixComponent
      * @return Payment
      * @throws Exception
      */
-    public function createOrderPayment(int $paySystemId): Payment
+    public function createOrderPayment(int $paySystemId)
     {
         $paymentCollection = $this->order->getPaymentCollection();
         $payment = $paymentCollection->createItem(
@@ -212,7 +232,7 @@ class OpenSourceOrderComponent extends CBitrixComponent
      *
      * @throws Exception
      */
-    public function validateProperties(): Result
+    public function validateProperties()
     {
         $result = new Result();
 
@@ -242,7 +262,7 @@ class OpenSourceOrderComponent extends CBitrixComponent
      * @return Result
      * @throws Exception
      */
-    public function validateDelivery(): Result
+    public function validateDelivery()
     {
         $result = new Result();
 
@@ -292,7 +312,7 @@ class OpenSourceOrderComponent extends CBitrixComponent
      * @return Result
      * @throws Exception
      */
-    public function validatePayment(): Result
+    public function validatePayment()
     {
         $result = new Result();
 
@@ -304,7 +324,7 @@ class OpenSourceOrderComponent extends CBitrixComponent
             $obPaySystem = $payment->getPaySystem();
             if ($obPaySystem instanceof PaySystem\Service) {
                 $availablePaySystems = PaySystem\Manager::getListWithRestrictions($payment);
-                if (!isset($availablePaySystems[$payment->getId()])) {
+                if (!isset($availablePaySystems[$payment->getPaymentSystemId()])) {
                     $result->addError(new Error(
                         Loc::getMessage(
                             'OPEN_SOURCE_ORDER_PAYMENT_UNAVAILABLE',
@@ -344,7 +364,7 @@ class OpenSourceOrderComponent extends CBitrixComponent
      * @return Result
      * @throws Exception
      */
-    public function validateOrder(): Result
+    public function validateOrder()
     {
         $result = new Result();
 
