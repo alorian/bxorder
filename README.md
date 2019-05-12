@@ -19,9 +19,7 @@ https://verstaem.com/bitrix/opensource-order/
             "email": "alorian@yandex.ru"
         }
     ],
-    "require": {
-        "andreyryabin/sprint.migration": "^3.0"
-    },
+    "require": {},
     "extra": {
         "bitrix-dir": "./"
     }
