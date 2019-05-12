@@ -9,9 +9,35 @@ https://verstaem.com/bitrix/opensource-order/
 
 1\. Установка через композер
 
+Чтобы пакет скачался в нужную папку в файле composer.json укажите путь до папки bitrix. Обратите внимание на блок extra:
+```json
+{
+    "name": "your/project",
+    "authors": [
+        {
+            "name": "Alexander Shubin",
+            "email": "alorian@yandex.ru"
+        }
+    ],
+    "require": {
+        "andreyryabin/sprint.migration": "^3.0"
+    },
+    "extra": {
+        "bitrix-dir": "./"
+    }
+}
+```
+Путь до папки bitrix нужно прописывать относительно файла composer.json. Например если файл composer.json лежит в /local/libs,
+то нужно прописать "bitrix-dir": "../../bitrix". По дефолту установщик считает, что файл composer.json лежит в document_root.
+Если не указать корректный bitrix-dir, то будет создана папка bitrix/modules/opensourse.order/ рядом с composer.json.
+
+После того как прописали правильный bitrix-dir выполните: 
 ```bash
 $ composer require alorian/bxorder
 ```
+
+После выполнения команды откройте список модулей маркетплейс в админке /bitrix/admin/partner_modules.php?lang=ru, если
+bitrix-dir был указан корректно, то вы увидите строку с модулем opensourse.order. Нажмите "Установить" в выпадающем меню.
 
 2\. Установка из маркетплейс
 
@@ -27,8 +53,8 @@ $ composer require alorian/bxorder
 в архиве необходимо переименовать. Таким образом полный путь до файла include.php у вас должен 
 быть /bitrix/modules/opensourse.order/include.php, либо /local/modules/opensourse.order/include.php
 
-После распаковки архива откройте список модулей маркетплейс в админке, найдите строку с модулем opensourse.order и нажмите
-"установить"
+После распаковки архива откройте список модулей маркетплейс в админке /bitrix/admin/partner_modules.php?lang=ru, 
+найдите строку с модулем opensourse.order и нажмите "Установить" в выпадающем меню
 
 ---
 
