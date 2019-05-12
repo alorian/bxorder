@@ -10,6 +10,7 @@
   "type": "bitrix-d7-module",
   "license": "MIT",
   "support": {
+    "telegram": "https://t.me/bxmeetup",
     "email": "verstaem.com@gmail.com",
     "skype": "alorian_22",
     "issues": "https://github.com/Alorian/bxorder/issues",
