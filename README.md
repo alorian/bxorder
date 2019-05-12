@@ -8,15 +8,18 @@ https://verstaem.com/bitrix/opensource-order/
 Установка доступна тремя разными способами:
 
 1\. Установка через композер
+
 ```bash
 $ composer require alorian/bxorder
 ```
 
 2\. Установка из маркетплейс
+
 Перейдите по ссылке https://marketplace.1c-bitrix.ru/solutions/opensource.order/ и установите решение как обычно.
 Если страница не открывается, то возможно решение еще на модерации.
 
 3\. Ручная установка
+
 Скачайте архив https://github.com/alorian/bxorder/archive/master.zip и самостоятельно распакуйте его содержимое
 в папку модулей битрикса -- /bitrix/modules, либо /local/modules.
 
