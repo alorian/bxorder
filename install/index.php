@@ -38,7 +38,7 @@ Class opensource_order extends CModule
 
     function UnInstallFiles()
     {
-        DeleteDirFilesEx('/bitrix/components/opensource.order');
+        DeleteDirFilesEx('/bitrix/components/opensource/order');
     }
 
     function DoInstall()
