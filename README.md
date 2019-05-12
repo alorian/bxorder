@@ -23,13 +23,16 @@ $ composer require alorian/bxorder
 Скачайте архив https://github.com/alorian/bxorder/archive/master.zip и самостоятельно распакуйте его содержимое
 в папку модулей битрикса -- /bitrix/modules, либо /local/modules.
 
-В папке модулей у вас должна быть папка opensourse.order, а не bxorder-master, папку bxorder-master необходимо
-переименовать. Таким образом полный путь до файла include.php у вас должен 
+В папке модулей у вас должна быть папка opensourse.order, а не bxorder-master, папку bxorder-master которая лежит
+в архиве необходимо переименовать. Таким образом полный путь до файла include.php у вас должен 
 быть /bitrix/modules/opensourse.order/include.php, либо /local/modules/opensourse.order/include.php
 
 После распаковки архива откройте список модулей маркетплейс в админке, найдите строку с модулем opensourse.order и нажмите
 "установить"
 
+---
+
+После установки любым из указанных способов разместите компонент opensource:order на нужной странице.
 
 ## Как использовать?
 
@@ -61,8 +64,6 @@ name у инпута ставьте properties[FIO]. Если переменна
 ```php
 <?php
 /**
- * MAKING $arResult FROM SCRATCHES
- *
  * @var OpenSourceOrderComponent $component
  */
 $component = &$this->__component;
