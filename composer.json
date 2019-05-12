@@ -7,7 +7,7 @@
     "module"
   ],
   "homepage": "https://github.com/Alorian/bxorder",
-  "type": "bitrix-d7-module",
+  "type": "bitrix-module",
   "license": "MIT",
   "support": {
     "telegram": "https://t.me/bxmeetup",
