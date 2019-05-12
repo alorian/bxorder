@@ -1,6 +1,8 @@
 <?php
 
 use Bitrix\Main\Error;
+use Bitrix\Main\Localization\Loc;
+use Bitrix\Main\Web\Json;
 
 if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
     die();
@@ -20,7 +22,7 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
 
     <input type="hidden" name="person_type_id" value="<?=$arParams['PERSON_TYPE_ID']?>">
 
-    <h2>Свойства заказа:</h2>
+    <h2><?= Loc::getMessage('OPEN_SOURCE_ORDER_TEMPLATE_PROPERTIES_TITLE')?>:</h2>
     <table>
         <?php foreach ($arResult['PROPERTIES'] as $propCode => $arProp): ?>
             <tr>
@@ -41,7 +43,7 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
                                 <select class="location-search" name="<?= $arProp['FORM_NAME'] ?>"
                                         id="<?= $arProp['FORM_LABEL'] ?>">
                                     <option
-                                            data-data='<?echo \Bitrix\Main\Web\Json::encode($arProp['LOCATION_DATA'])?>'
+                                            data-data='<?echo Json::encode($arProp['LOCATION_DATA'])?>'
                                             value="<?= $arProp['VALUE'] ?>"><?=$arProp['LOCATION_DATA']['label']?></option>
                                 </select>
                             </div>
@@ -92,7 +94,7 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
         <? endforeach; ?>
     </table>
 
-    <h2>Службы доставки:</h2>
+    <h2><?= Loc::getMessage('OPEN_SOURCE_ORDER_TEMPLATE_DELIVERIES_TITLE')?>:</h2>
     <? foreach ($arResult['DELIVERY_ERRORS'] as $error):
         /** @var Error $error */
         ?>
@@ -110,7 +112,7 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
         <br>
     <? endforeach; ?>
 
-    <h2>Платежные системы:</h2>
+    <h2><?= Loc::getMessage('OPEN_SOURCE_ORDER_TEMPLATE_PAY_SYSTEMS_TITLE')?>:</h2>
     <? foreach ($arResult['PAY_SYSTEM_ERRORS'] as $error):
         /** @var Error $error */
         ?>
@@ -127,14 +129,14 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
         <br>
     <? endforeach; ?>
 
-    <h2>Состав заказа</h2>
+    <h2><?= Loc::getMessage('OPEN_SOURCE_ORDER_TEMPLATE_BASKET_TITLE')?></h2>
     <table>
         <tr>
-            <th>Название</th>
-            <th>Количество</th>
-            <th>Цена за штуку</th>
-            <th>Цена со скидкой</th>
-            <th>Итого</th>
+            <th><?= Loc::getMessage('OPEN_SOURCE_ORDER_TEMPLATE_BASKET_NAME_COLUMN')?></th>
+            <th><?= Loc::getMessage('OPEN_SOURCE_ORDER_TEMPLATE_BASKET_COUNT_COLUMN')?></th>
+            <th><?= Loc::getMessage('OPEN_SOURCE_ORDER_TEMPLATE_BASKET_UNIT_PRICE_COLUMN')?></th>
+            <th><?= Loc::getMessage('OPEN_SOURCE_ORDER_TEMPLATE_BASKET_DISCOUNT_COLUMN')?></th>
+            <th><?= Loc::getMessage('OPEN_SOURCE_ORDER_TEMPLATE_BASKET_TOTAL_COLUMN')?></th>
         </tr>
         <? foreach ($arResult['BASKET'] as $arBasketItem): ?>
             <tr>
@@ -158,58 +160,58 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
         <? endforeach; ?>
     </table>
 
-    <h2>Итоговые цифры</h2>
-    <h3>Цены товаров:</h3>
+    <h2><?= Loc::getMessage('OPEN_SOURCE_ORDER_TEMPLATE_ORDER_TOTAL_TITLE')?></h2>
+    <h3><?= Loc::getMessage('OPEN_SOURCE_ORDER_TEMPLATE_PRODUCTS_PRICES_TITLE')?>:</h3>
     <table>
         <tr>
-            <td>Стоимость товаров без скидок</td>
+            <td><?= Loc::getMessage('OPEN_SOURCE_ORDER_TEMPLATE_PRODUCTS_BASE_PRICE')?></td>
             <td><?= $arResult['PRODUCTS_BASE_PRICE_DISPLAY'] ?></td>
         </tr>
         <tr>
-            <td>Стоимость товаров со скидками</td>
+            <td><?= Loc::getMessage('OPEN_SOURCE_ORDER_TEMPLATE_PRODUCTS_PRICE')?></td>
             <td><?= $arResult['PRODUCTS_PRICE_DISPLAY'] ?></td>
         </tr>
         <tr>
-            <td>Скидка на товары</td>
+            <td><?= Loc::getMessage('OPEN_SOURCE_ORDER_TEMPLATE_PRODUCTS_DISCOUNT')?></td>
             <td><?= $arResult['PRODUCTS_DISCOUNT_DISPLAY'] ?></td>
         </tr>
     </table>
 
-    <h3>Стоимость доставки:</h3>
+    <h3><?= Loc::getMessage('OPEN_SOURCE_ORDER_TEMPLATE_DELIVERY_PRICES_TITLE')?>:</h3>
     <table>
         <tr>
-            <td>Стоимость доставки без учета скидок</td>
+            <td><?= Loc::getMessage('OPEN_SOURCE_ORDER_TEMPLATE_DELIVERY_BASE_PRICE')?></td>
             <td><?= $arResult['DELIVERY_BASE_PRICE_DISPLAY'] ?></td>
         </tr>
         <tr>
-            <td>Стоимость доставки со скидками</td>
+            <td><?= Loc::getMessage('OPEN_SOURCE_ORDER_TEMPLATE_DELIVERY_PRICE')?></td>
             <td><?= $arResult['DELIVERY_PRICE_DISPLAY'] ?></td>
         </tr>
         <tr>
-            <td>Скидка на доставку</td>
+            <td><?= Loc::getMessage('OPEN_SOURCE_ORDER_TEMPLATE_DELIVERY_DISCOUNT')?></td>
             <td><?= $arResult['DELIVERY_DISCOUNT_DISPLAY'] ?></td>
         </tr>
     </table>
 
-    <h3>Заказ целиком:</h3>
+    <h3><?= Loc::getMessage('OPEN_SOURCE_ORDER_TEMPLATE_SUM_TITLE')?>:</h3>
     <table>
         <tr>
-            <td>Общая цена без скидок</td>
+            <td><?= Loc::getMessage('OPEN_SOURCE_ORDER_TEMPLATE_TOTAL_BASE_PRICE')?></td>
             <td><?= $arResult['SUM_BASE_DISPLAY'] ?></td>
         </tr>
         <tr>
-            <td>Общая скидка</td>
+            <td><?= Loc::getMessage('OPEN_SOURCE_ORDER_TEMPLATE_TOTAL_DISCOUNT')?></td>
             <td><?= $arResult['DISCOUNT_VALUE_DISPLAY'] ?></td>
         </tr>
         <tr>
-            <td>К оплате</td>
+            <td><?= Loc::getMessage('OPEN_SOURCE_ORDER_TEMPLATE_TOTAL_PRICE')?></td>
             <td><?= $arResult['SUM_DISPLAY'] ?></td>
         </tr>
     </table>
 
     <input type="hidden" name="save" value="y">
     <br>
-    <button type="submit">Оформить заказ</button>
+    <button type="submit"><?= Loc::getMessage('OPEN_SOURCE_ORDER_TEMPLATE_MAKE_ORDER_BUTTON')?></button>
     <br>
     <br>
 

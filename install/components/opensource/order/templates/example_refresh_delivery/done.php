@@ -1,6 +1,7 @@
 <?php
 
 use Bitrix\Main\Error;
+use Bitrix\Main\Localization\Loc;
 use Bitrix\Sale\Order;
 
 if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
@@ -19,4 +20,6 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
 /** @var OpenSourceOrderComponent $component */
 ?>
 
-Заказ №<?=$arResult['ID']?> успешно создан
+<?= Loc::getMessage('OPEN_SOURCE_ORDER_TEMPLATE_ORDER_CREATED', [
+    '#ORDER_ID#' => $arResult['ID']
+]) ?>
