@@ -17,7 +17,7 @@ class OrderHelper
      * @return Shipment|null
      * @throws Exception
      */
-    public static function getFirstNonSystemShipment(Order $order): ?Shipment
+    public static function getFirstNonSystemShipment(Order $order)
     {
         /** @var Shipment $shipment */
         foreach ($order->getShipmentCollection() as $shipment) {
