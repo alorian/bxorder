@@ -10,7 +10,7 @@ if (class_exists('opensource_order')) {
 
 Class opensource_order extends CModule
 {
-    public const MODULE_ID = 'opensource.order';
+    const MODULE_ID = 'opensource.order';
     public $MODULE_ID = 'opensource.order';
     public $MODULE_VERSION;
     public $MODULE_VERSION_DATE;
