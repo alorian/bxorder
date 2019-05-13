@@ -29,7 +29,7 @@ https://verstaem.com/bitrix/opensource-order/
 ```
 Путь до папки bitrix нужно прописывать относительно файла composer.json. Например если файл composer.json лежит в /local/libs,
 то нужно прописать "bitrix-dir": "../../bitrix". По дефолту установщик считает, что файл composer.json лежит в document_root.
-Если не указать корректный bitrix-dir, то будет создана папка bitrix/modules/outsource.order/ рядом с composer.json.
+Если не указать корректный bitrix-dir, то будет создана папка bitrix/modules/opensource.order/ рядом с composer.json.
 
 После того как прописали правильный bitrix-dir выполните: 
 ```bash
@@ -37,7 +37,7 @@ $ composer require alorian/bxorder
 ```
 
 После выполнения команды откройте список модулей маркетплейс в админке /bitrix/admin/partner_modules.php?lang=ru, если
-bitrix-dir был указан корректно, то вы увидите строку с модулем outsource.order. Нажмите "Установить" в выпадающем меню.
+bitrix-dir был указан корректно, то вы увидите строку с модулем opensource.order. Нажмите "Установить" в выпадающем меню.
 
 2\. Установка из маркетплейс
 
@@ -49,12 +49,12 @@ bitrix-dir был указан корректно, то вы увидите ст
 Скачайте архив https://github.com/alorian/bxorder/archive/master.zip и самостоятельно распакуйте его содержимое
 в папку модулей битрикса -- /bitrix/modules, либо /local/modules.
 
-В папке модулей у вас должна быть папка outsource.order, а не bxorder-master, папку bxorder-master которая лежит
+В папке модулей у вас должна быть папка opensource.order, а не bxorder-master, папку bxorder-master которая лежит
 в архиве необходимо переименовать. Таким образом полный путь до файла include.php у вас должен 
-быть /bitrix/modules/outsource.order/include.php, либо /local/modules/outsource.order/include.php
+быть /bitrix/modules/opensource.order/include.php, либо /local/modules/opensource.order/include.php
 
 После распаковки архива откройте список модулей маркетплейс в админке /bitrix/admin/partner_modules.php?lang=ru, 
-найдите строку с модулем outsource.order и нажмите "Установить" в выпадающем меню
+найдите строку с модулем opensource.order и нажмите "Установить" в выпадающем меню
 
 ---
 
