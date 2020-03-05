@@ -99,8 +99,9 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
         /** @var Error $error */
         ?>
         <div class="error"><?= $error->getMessage() ?></div>
-    <? endforeach;
-    foreach ($arResult['DELIVERY_LIST'] as $arDelivery):?>
+    <? endforeach; ?>
+    <input type="hidden" name="delivery_id" value="0">
+    <? foreach ($arResult['DELIVERY_LIST'] as $arDelivery):?>
         <label>
             <input type="radio" name="delivery_id"
                    value="<?= $arDelivery['ID'] ?>"
@@ -117,8 +118,9 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
         /** @var Error $error */
         ?>
         <div class="error"><?= $error->getMessage() ?></div>
-    <? endforeach;
-    foreach ($arResult['PAY_SYSTEM_LIST'] as $arPaySystem): ?>
+    <? endforeach; ?>
+    <input type="hidden" name="pay_system_id" value="0">
+    <? foreach ($arResult['PAY_SYSTEM_LIST'] as $arPaySystem): ?>
         <label>
             <input type="radio" name="pay_system_id"
                    value="<?= $arPaySystem['ID'] ?>"
