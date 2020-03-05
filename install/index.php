@@ -31,14 +31,25 @@ Class opensource_order extends CModule
         $this->PARTNER_URI = Loc::getMessage('opensource_order_PARTNER_URI');
     }
 
+    /**
+     * Get /document/local (when exists) or /document/bitrix.
+     * @return string
+     */
+    private function getRoot()
+    {
+        $local = $_SERVER['DOCUMENT_ROOT'] . '/local';
+        return is_dir($local) ? $local : $_SERVER['DOCUMENT_ROOT'] . BX_ROOT;
+    }
+
     function InstallFiles()
     {
-        CopyDirFiles(__DIR__ . '/components', $_SERVER['DOCUMENT_ROOT'] . "/bitrix/components", true, true);
+        CopyDirFiles(__DIR__ . '/components', $this->getRoot() . "/components", true, true);
     }
 
     function UnInstallFiles()
     {
-        DeleteDirFilesEx('/bitrix/components/opensource/order');
+        DeleteDirFilesEx(BX_ROOT . '/components/opensource/order');
+        DeleteDirFilesEx('/local/components/opensource/order');
     }
 
     function DoInstall()
