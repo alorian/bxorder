@@ -193,7 +193,7 @@ class OpenSourceOrderAjaxController extends Controller
      * @return array
      * @throws Exception
      */
-    public function saveOrderAction(int $person_type_id, array $properties, int $delivery_id, int $pay_system_id): array
+    public function saveOrderAction(int $person_type_id, int $delivery_id, int $pay_system_id): array
     {
         $data = [];
 
@@ -201,7 +201,7 @@ class OpenSourceOrderAjaxController extends Controller
 
         $componentClass = new OpenSourceOrderComponent();
         $componentClass->createVirtualOrder($person_type_id);
-        $componentClass->setOrderProperties($properties);
+        $componentClass->setOrderProperties($componentClass->getPropertiesFromRequest());
         $componentClass->createOrderShipment($delivery_id);
         $componentClass->createOrderPayment($pay_system_id);
 
