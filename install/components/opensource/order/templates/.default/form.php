@@ -100,7 +100,7 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
         ?>
         <div class="error"><?= $error->getMessage() ?></div>
     <? endforeach; ?>
-    <input type="hidden" name="delivery_id" value="0">
+    <input type="hidden" name="delivery_id" value="<?= $arParams['DEFAULT_DELIVERY_ID'] ?>">
     <? foreach ($arResult['DELIVERY_LIST'] as $arDelivery):?>
         <label>
             <input type="radio" name="delivery_id"
@@ -119,7 +119,7 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
         ?>
         <div class="error"><?= $error->getMessage() ?></div>
     <? endforeach; ?>
-    <input type="hidden" name="pay_system_id" value="0">
+    <input type="hidden" name="pay_system_id" value="<?= $arParams['DEFAULT_PAY_SYSTEM_ID'] ?>">
     <? foreach ($arResult['PAY_SYSTEM_LIST'] as $arPaySystem): ?>
         <label>
             <input type="radio" name="pay_system_id"
