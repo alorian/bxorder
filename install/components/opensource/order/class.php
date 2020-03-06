@@ -145,7 +145,7 @@ class OpenSourceOrderComponent extends CBitrixComponent
                         $properties[$fieldCode] = array("ID" => '');
                     }
 
-                    $properties[$fieldCode][$fileKey] = current($arFileFieldValue);
+                    $properties[$fieldCode][$fileKey] = $arFileFieldValue;
                 }
             }
         }
