@@ -18,7 +18,7 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
 /** @var string $componentPath */
 /** @var OpenSourceOrderComponent $component */
 ?>
-<form action="" method="post" name="os-order-form" id="os-order-form">
+<form action="" method="post" name="os-order-form" id="os-order-form" enctype="multipart/form-data">
 
     <input type="hidden" name="person_type_id" value="<?=$arParams['PERSON_TYPE_ID']?>">
 
