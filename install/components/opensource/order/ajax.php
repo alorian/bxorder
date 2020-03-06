@@ -3,6 +3,7 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
     die();
 }
 
+use Bitrix\Main\Context;
 use Bitrix\Main\Engine\Controller;
 use Bitrix\Main\Loader;
 use Bitrix\Main\LoaderException;
@@ -12,6 +13,7 @@ use Bitrix\Sale\Location\TypeTable;
 use OpenSource\Order\LocationHelper;
 use Bitrix\Sale\Delivery;
 use OpenSource\Order\OrderHelper;
+use OpenSource\Order\EasyOrder;
 
 class OpenSourceOrderAjaxController extends Controller
 {
@@ -40,6 +42,9 @@ class OpenSourceOrderAjaxController extends Controller
                 'prefilters' => []
             ],
             'saveOrder' => [
+                'prefilters' => []
+            ],
+            'saveEasyOrder' => [
                 'prefilters' => []
             ]
         ];
@@ -185,31 +190,14 @@ class OpenSourceOrderAjaxController extends Controller
         return $calculatedDeliveries;
     }
 
-    /**
-     * @param int $person_type_id
-     * @param array $properties
-     * @param int $delivery_id
-     * @param int $pay_system_id
-     * @return array
-     * @throws Exception
-     */
-    public function saveOrderAction(int $person_type_id, array $properties, int $delivery_id, int $pay_system_id): array
+    private function saveOrder(OpenSourceOrderComponent $componentClass): array
     {
         $data = [];
-
-        CBitrixComponent::includeComponentClass('opensource:order');
-
-        $componentClass = new OpenSourceOrderComponent();
-        $componentClass->createVirtualOrder($person_type_id);
-        $componentClass->setOrderProperties($properties);
-        $componentClass->createOrderShipment($delivery_id);
-        $componentClass->createOrderPayment($pay_system_id);
 
         $validationResult = $componentClass->validateOrder();
         if ($validationResult->isSuccess()) {
             $saveResult = $componentClass->order->save();
             if ($saveResult->isSuccess()) {
-                $data['saved'] = true;
                 $data['order_id'] = $saveResult->getId();
             } else {
                 $this->errorCollection->add($saveResult->getErrors());
@@ -221,4 +209,50 @@ class OpenSourceOrderAjaxController extends Controller
         return $data;
     }
 
+    /**
+     * @param int $person_type_id
+     * @param array $properties
+     * @param int $delivery_id
+     * @param int $pay_system_id
+     * @return array
+     * @throws Exception
+     */
+    public function saveOrderAction(int $person_type_id, array $properties, int $delivery_id, int $pay_system_id): array
+    {
+        CBitrixComponent::includeComponentClass('opensource:order');
+
+        $componentClass = new OpenSourceOrderComponent();
+        $componentClass->createVirtualOrder($person_type_id);
+        $componentClass->setOrderProperties($properties);
+        $componentClass->createOrderShipment($delivery_id);
+        $componentClass->createOrderPayment($pay_system_id);
+
+        return $this->saveOrder($componentClass);
+    }
+
+    public function saveEasyOrderAction(
+        int $person_type_id,
+        int $productId,
+        array $properties,
+        int $delivery_id,
+        int $pay_system_id
+    ): array {
+        CBitrixComponent::includeComponentClass('opensource:order');
+        $siteId = Context::getCurrent()->getSite();
+
+        $componentClass = new EasyOrder();
+        $basket = $componentClass->createVirtualEmptyBasket($siteId);
+        $addResult = $componentClass->addProduct($siteId, $basket, $productId);
+        if(!$addResult->isSuccess()) {
+            $this->errorCollection->add($addResult->getErrors());
+        }
+
+        $componentClass->createVirtualEasyOrder($person_type_id, $basket);
+
+        $componentClass->setOrderProperties($properties);
+        $componentClass->createOrderShipment($delivery_id);
+        $componentClass->createOrderPayment($pay_system_id);
+
+        return $this->saveOrder($componentClass);
+    }
 }
