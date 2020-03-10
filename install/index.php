@@ -35,10 +35,14 @@ Class opensource_order extends CModule
      * Get /document/local (when exists) or /document/bitrix.
      * @return string
      */
-    private function getRoot()
+    function getRoot()
     {
         $local = $_SERVER['DOCUMENT_ROOT'] . '/local';
-        return is_dir($local) ? $local : $_SERVER['DOCUMENT_ROOT'] . BX_ROOT;
+        if(1 === preg_match('#local[\\\/]modules#', __DIR__) && is_dir($local)) {
+            return $local;
+        }
+
+        return $_SERVER['DOCUMENT_ROOT'] . BX_ROOT;
     }
 
     function InstallFiles()
