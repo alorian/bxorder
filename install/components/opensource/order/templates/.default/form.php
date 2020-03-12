@@ -83,10 +83,17 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
                             <?
                             break;
 
+                        case 'FILE':
+                            ?>
+                            <input id="<?= $arProp['FORM_LABEL'] ?>" type="file"
+                                   name="<?= $arProp['FORM_NAME'] ?>"
+                                   value="<?= $arProp['VALUE'] ?>">
+                            <?
+                            break;
+
                         default:
                             ?>
-                            <input id="<?= $arProp['FORM_LABEL'] ?>"
-                                   type="<?= 'FILE' === $arProp['TYPE'] ? 'file' : 'text' ?>"
+                            <input id="<?= $arProp['FORM_LABEL'] ?>" type="text"
                                    name="<?= $arProp['FORM_NAME'] ?>"
                                    value="<?= $arProp['VALUE'] ?>">
                         <? endswitch; ?>
