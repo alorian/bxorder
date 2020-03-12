@@ -18,10 +18,6 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
 /** @var string $componentPath */
 /** @var OpenSourceOrderComponent $component */
 
-if( ! defined('REQUIRED_SIGN')) {
-    define('REQUIRED_SIGN', '<span class="required" style="color: red;" title="' .
-        Loc::getMessage('OPEN_SOURCE_ORDER_TEMPLATE_FIELD_REQUIRED') . '">*</span>');
-}
 ?>
 <form action="" method="post" name="os-order-form" id="os-order-form">
 
@@ -34,7 +30,10 @@ if( ! defined('REQUIRED_SIGN')) {
                 <td>
                     <label for="<?= $arProp['FORM_LABEL'] ?>">
                         <?= $arProp['NAME'] ?>
-                        <?= ! $arProp['IS_REQUIRED'] ?: REQUIRED_SIGN; ?>
+                        <?php if($arProp['IS_REQUIRED']) printf(
+                            '<span class="required" style="color: red;" title="%s">*</span>',
+                            Loc::getMessage('OPEN_SOURCE_ORDER_TEMPLATE_FIELD_REQUIRED')
+                        ); ?>
                     </label>
                     <? foreach ($arProp['ERRORS'] as $error):
                         /** @var Error $error */
