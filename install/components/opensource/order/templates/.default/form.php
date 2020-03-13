@@ -17,6 +17,7 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
 /** @var string $templateFolder */
 /** @var string $componentPath */
 /** @var OpenSourceOrderComponent $component */
+
 ?>
 <form action="" method="post" name="os-order-form" id="os-order-form">
 
@@ -27,7 +28,13 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
         <?php foreach ($arResult['PROPERTIES'] as $propCode => $arProp): ?>
             <tr>
                 <td>
-                    <label for="<?= $arProp['FORM_LABEL'] ?>"><?= $arProp['NAME'] ?></label>
+                    <label for="<?= $arProp['FORM_LABEL'] ?>">
+                        <?= $arProp['NAME'] ?>
+                        <?php if($arProp['IS_REQUIRED']) printf(
+                            '<span class="required" style="color: red;" title="%s">*</span>',
+                            Loc::getMessage('OPEN_SOURCE_ORDER_TEMPLATE_FIELD_REQUIRED')
+                        ); ?>
+                    </label>
                     <? foreach ($arProp['ERRORS'] as $error):
                         /** @var Error $error */
                         ?>

@@ -43,6 +43,7 @@ foreach ($order->getPropertyCollection() as $prop) {
     $arProp['TYPE'] = $prop->getType();
     $arProp['NAME'] = $prop->getName();
     $arProp['VALUE'] = $prop->getValue();
+    $arProp['IS_REQUIRED'] = $prop->isRequired();
     $arProp['ERRORS'] = $component->errorCollection->getAllErrorsByCode('PROPERTIES[' . $prop->getField('CODE') . ']');
 
     switch ($prop->getType()) {
