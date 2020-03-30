@@ -22,6 +22,8 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
 <form action="" method="post" name="os-order-form" id="os-order-form">
 
     <input type="hidden" name="person_type_id" value="<?=$arParams['PERSON_TYPE_ID']?>">
+    <input type="hidden" name="delivery_id" value="<?= $arParams['DEFAULT_DELIVERY_ID'] ?>">
+    <input type="hidden" name="pay_system_id" value="<?= $arParams['DEFAULT_PAY_SYSTEM_ID'] ?>">
 
     <h2><?= Loc::getMessage('OPEN_SOURCE_ORDER_TEMPLATE_PROPERTIES_TITLE')?>:</h2>
     <table>
@@ -106,8 +108,8 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
         /** @var Error $error */
         ?>
         <div class="error"><?= $error->getMessage() ?></div>
-    <? endforeach;
-    foreach ($arResult['DELIVERY_LIST'] as $arDelivery):?>
+    <? endforeach; ?>
+    <? foreach ($arResult['DELIVERY_LIST'] as $arDelivery):?>
         <label>
             <input type="radio" name="delivery_id"
                    value="<?= $arDelivery['ID'] ?>"
@@ -124,8 +126,8 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
         /** @var Error $error */
         ?>
         <div class="error"><?= $error->getMessage() ?></div>
-    <? endforeach;
-    foreach ($arResult['PAY_SYSTEM_LIST'] as $arPaySystem): ?>
+    <? endforeach; ?>
+    <? foreach ($arResult['PAY_SYSTEM_LIST'] as $arPaySystem): ?>
         <label>
             <input type="radio" name="pay_system_id"
                    value="<?= $arPaySystem['ID'] ?>"
