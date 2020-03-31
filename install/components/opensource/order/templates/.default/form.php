@@ -58,12 +58,21 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
                             break;
 
                         case 'ENUM':
-                            foreach ($arProp['OPTIONS'] as $code => $name):?>
-                                <label class="enum-option">
-                                    <input type="radio" name="<?= $arProp['FORM_NAME'] ?>" value="<?= $code ?>">
-                                    <?= $name ?>
-                                </label>
-                            <?endforeach;
+                            if("Y" === $arProp['MULTIELEMENT']) {
+                                ?><select name="<?= $arProp['FORM_NAME'] ?>">
+                                <?foreach ($arProp['OPTIONS'] as $code => $name):
+                                    $selected = $arProp['VALUE'] != $code ?: ' selected'; ?>
+                                    <option value="<?= $code ?>"<?= $selected?>><?= $name ?></option>
+                                <?endforeach;?>
+                                </select><?
+                            } else {
+                                foreach ($arProp['OPTIONS'] as $code => $name):?>
+                                    <label class="enum-option">
+                                        <input type="radio" name="<?= $arProp['FORM_NAME'] ?>" value="<?= $code ?>">
+                                        <?= $name ?>
+                                    </label>
+                                <?endforeach;
+                            }
                             break;
 
                         case 'DATE':
