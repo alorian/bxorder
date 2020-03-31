@@ -54,8 +54,9 @@ foreach ($order->getPropertyCollection() as $prop) {
             break;
 
         case 'ENUM':
-            $arProp['OPTIONS'] = $prop->getPropertyObject()
-                ->getOptions();
+            $obProperty = $prop->getPropertyObject();
+            $arProp['MULTIELEMENT'] = $obProperty->getField('MULTIELEMENT');
+            $arProp['OPTIONS'] = $obProperty->getOptions();
             break;
     }
 
