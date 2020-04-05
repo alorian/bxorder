@@ -116,6 +116,11 @@ class OpenSourceOrderComponent extends CBitrixComponent
             throw new RuntimeException(Loc::getMessage('OPEN_SOURCE_ORDER_UNKNOWN_PERSON_TYPE'));
         }
 
+        $userID = intval($USER->GetID());
+        if( ! $userID && 'Y' !== $this->arParams['ALLOW_UNAUTH_ORDER'] ) {
+            throw new RuntimeException(Loc::getMessage('OPEN_SOURCE_ORDER_USER_NOT_AUTH'));
+        }
+
         $siteId = Context::getCurrent()
             ->getSite();
 
@@ -126,7 +131,7 @@ class OpenSourceOrderComponent extends CBitrixComponent
             throw new LengthException(Loc::getMessage('OPEN_SOURCE_ORDER_EMPTY_BASKET'));
         }
 
-        $this->order = Order::create($siteId, $USER->GetID());
+        $this->order = Order::create($siteId, $userID ?: CSaleUser::GetAnonymousUserID());
         $this->order->setPersonTypeId($personTypeId);
         $this->order->setBasket($basketItems);
 
