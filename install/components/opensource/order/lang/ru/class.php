@@ -9,3 +9,4 @@ $MESS['OPEN_SOURCE_ORDER_NO_PAY_SYSTEM_SELECTED'] = 'Не выбрана пла�
 $MESS['OPEN_SOURCE_ORDER_PROPERTY_REQUIRED'] = 'Свойство #PROPERTY_NAME# обязательное';
 $MESS['OPEN_SOURCE_ORDER_PROPERTY_ENUM_INVALID_OPTION'] = 'В свойсте #PROPERTY_NAME# выбрано неверное значение';
 $MESS['OPEN_SOURCE_ORDER_PROPERTY_DATE_WRONG_FORMAT'] = 'Дата в свойстве #PROPERTY_NAME# указана в неверном формате';
+$MESS['OPEN_SOURCE_ORDER_USER_NOT_AUTH'] = 'Для продолжения необходимо авторизироваться';
